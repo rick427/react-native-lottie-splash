@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import LottieView from 'lottie-react-native';
 import NativeRNLottieSplash from './NativeRNLottieSplash';
 
@@ -10,7 +10,12 @@ export interface LottieSplashScreenProps {
   source: AnimationSource;
   /** Background color of the splash overlay. Should match your app's launch screen background. Default: '#FFFFFF' */
   backgroundColor?: string;
-  /** How the animation is sized within the screen. Default: 'contain' */
+  /**
+   * How the Lottie animation is sized within the screen.
+   * - `contain` (default): entire animation visible, preserves aspect ratio
+   * - `cover`: fills the view, may crop the animation
+   * - `center`: rendered at its natural size, centered
+   */
   resizeMode?: 'cover' | 'contain' | 'center';
   /** Automatically dismiss when the animation finishes (loop must be false). Default: false */
   autoHide?: boolean;
@@ -18,6 +23,17 @@ export interface LottieSplashScreenProps {
   fadeDuration?: number;
   /** Playback speed multiplier. Default: 1 */
   speed?: number;
+  /**
+   * Status bar content color while the splash is visible. Use `dark-content`
+   * for dark icons on a light background, `light-content` for light icons on
+   * a dark background. Default: `dark-content`.
+   */
+  statusBarStyle?: 'default' | 'dark-content' | 'light-content';
+  /**
+   * (Android only) Whether the status bar should be translucent so the
+   * splash background shows through. Default: `true`.
+   */
+  statusBarTranslucent?: boolean;
   /** Called after the splash has fully faded out */
   onHide?: () => void;
   children: React.ReactNode;
@@ -65,6 +81,8 @@ export function LottieSplashScreen({
   autoHide = false,
   fadeDuration = 400,
   speed = 1,
+  statusBarStyle = 'dark-content',
+  statusBarTranslucent = true,
   onHide,
   children,
 }: LottieSplashScreenProps) {
@@ -135,6 +153,19 @@ export function LottieSplashScreen({
         <Animated.View
           style={[StyleSheet.absoluteFillObject, { backgroundColor, opacity }]}
         >
+          {/*
+           * Transparent, translucent status bar while the splash is shown so
+           * the splash background bleeds behind the clock/battery icons
+           * instead of a solid gray bar sitting at the top. When `visible`
+           * flips to false this <StatusBar> unmounts and React Native
+           * restores whatever the underlying screen declares.
+           */}
+          <StatusBar
+            barStyle={statusBarStyle}
+            backgroundColor="transparent"
+            translucent={Platform.OS === 'android' ? statusBarTranslucent : undefined}
+            animated
+          />
           <LottieView
             ref={lottieRef}
             source={source as Parameters<typeof LottieView>[0]['source']}

@@ -1,7 +1,7 @@
 {
-  "name": "react-native-lottie-splash",
-  "version": "1.0.0",
-  "description": "Animated Lottie splash screen for React Native — plays on launch, dismisses when your app is ready",
+  "name": "@rick427/react-native-lottie-splash",
+  "version": "1.0.2",
+  "description": "Animated Lottie splash screen for React Native — plays on launch, dismisses when your app is ready. Pairs with react-native-bootsplash for a flash-free launch experience.",
   "main": "src/index",
   "react-native": "src/index",
   "source": "src/index",
@@ -19,10 +19,25 @@
     "lottie",
     "splash",
     "splash-screen",
+    "bootsplash",
     "animation",
-    "animated-splash"
+    "animated-splash",
+    "turbomodule",
+    "new-architecture"
   ],
+  "author": "rick427",
   "license": "MIT",
+  "homepage": "https://github.com/rick427/react-native-lottie-splash#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rick427/react-native-lottie-splash.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rick427/react-native-lottie-splash/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "lottie-react-native": ">=6.0.0",
     "react": ">=18.0.0",
