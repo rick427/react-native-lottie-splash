@@ -1,0 +1,39 @@
+{
+  "name": "react-native-lottie-splash",
+  "version": "1.0.0",
+  "description": "Animated Lottie splash screen for React Native — plays on launch, dismisses when your app is ready",
+  "main": "src/index",
+  "react-native": "src/index",
+  "source": "src/index",
+  "types": "src/index",
+  "files": [
+    "src",
+    "android",
+    "ios",
+    "react-native-lottie-splash.podspec"
+  ],
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "lottie",
+    "splash",
+    "splash-screen",
+    "animation",
+    "animated-splash"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "lottie-react-native": ">=6.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.71.0"
+  },
+  "codegenConfig": {
+    "name": "RNLottieSplashSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.rnlottiesplash"
+    }
+  }
+}

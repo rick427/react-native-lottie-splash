@@ -1,0 +1,7 @@
+node_modules/
+lib/
+ios/build/
+android/build/
+android/.gradle/
+*.xcworkspace
+Pods/
