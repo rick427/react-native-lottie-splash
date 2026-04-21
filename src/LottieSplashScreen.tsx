@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import type { DimensionValue } from 'react-native';
 import { Animated, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import LottieView from 'lottie-react-native';
 import NativeRNLottieSplash from './NativeRNLottieSplash';
@@ -34,6 +35,22 @@ export interface LottieSplashScreenProps {
    * splash background shows through. Default: `true`.
    */
   statusBarTranslucent?: boolean;
+  /**
+   * Whether the Lottie animation fills the entire screen (edge-to-edge).
+   * When `false`, the animation is sized by `width`/`height` and centered
+   * against `backgroundColor`. Default: `true`.
+   */
+  fullscreen?: boolean;
+  /**
+   * Width of the Lottie animation when `fullscreen={false}`. Accepts a number
+   * (dp) or percentage string (e.g. `'80%'`). Default: `'80%'`.
+   */
+  width?: DimensionValue;
+  /**
+   * Height of the Lottie animation when `fullscreen={false}`. Accepts a number
+   * (dp) or percentage string (e.g. `'80%'`). Default: `'80%'`.
+   */
+  height?: DimensionValue;
   /** Called after the splash has fully faded out */
   onHide?: () => void;
   children: React.ReactNode;
@@ -83,6 +100,9 @@ export function LottieSplashScreen({
   speed = 1,
   statusBarStyle = 'dark-content',
   statusBarTranslucent = true,
+  fullscreen = true,
+  width = '80%',
+  height = '80%',
   onHide,
   children,
 }: LottieSplashScreenProps) {
@@ -151,7 +171,14 @@ export function LottieSplashScreen({
       {children}
       {visible && (
         <Animated.View
-          style={[StyleSheet.absoluteFillObject, { backgroundColor, opacity }]}
+          style={[
+            StyleSheet.absoluteFillObject,
+            { backgroundColor, opacity },
+            // Center the Lottie inside the full-screen background when it's
+            // not edge-to-edge. For fullscreen=true we keep the original
+            // flex layout so the animation fills its parent 1:1.
+            !fullscreen && styles.centered,
+          ]}
         >
           {/*
            * Transparent, translucent status bar while the splash is shown so
@@ -172,7 +199,7 @@ export function LottieSplashScreen({
             autoPlay
             loop={false}
             speed={speed}
-            style={styles.lottie}
+            style={fullscreen ? styles.lottieFull : { width, height }}
             resizeMode={resizeMode}
             // Hardware rendering removes most of the lag on complex animations.
             renderMode="HARDWARE"
@@ -193,7 +220,11 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
-  lottie: {
+  lottieFull: {
     flex: 1,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
