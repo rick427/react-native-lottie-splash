@@ -9,25 +9,27 @@ Works on **Android** and **iOS**, supports the **New Architecture** (RN 0.73+).
 ## How it works
 
 ```
-App launch
-    │
-    ▼
-OS shows native splash (static background)
-    │
-    ▼  ← JS bundle loads
-React renders <LottieSplashScreen>  ──────────────────────────────────┐
-    │  (covers entire screen, blocks touches)                          │
-    ▼                                                                  │
-Lottie animation plays                                                 │
-    │                                                                  │
-    ├─ autoHide={true}  → fade out when animation finishes             │
-    └─ autoHide={false} → call LottieSplash.hide() when app is ready  │
-                                                                       │
-Overlay fades out ─────────────────────────────────────────────────────┘
-    │
-    ▼
-App is fully interactive
+┌──────────────────────────────────────────────────────────────┐
+│ 1.  App launch                                               │
+│     OS shows the native window background (solid color)      │
+├──────────────────────────────────────────────────────────────┤
+│ 2.  JS bundle loads → React renders                          │
+│     <LottieSplashScreen> mounts on top of your app,          │
+│     covering the entire screen and blocking touches          │
+├──────────────────────────────────────────────────────────────┤
+│ 3.  Lottie animation plays                                   │
+│     Hardware-accelerated, non-looping                        │
+├──────────────────────────────────────────────────────────────┤
+│ 4.  Dismiss  (one of)                                        │
+│       autoHide={true}   → fades out when animation ends      │
+│       LottieSplash.hide() → fades out whenever you call it   │
+├──────────────────────────────────────────────────────────────┤
+│ 5.  Overlay fades to opacity 0 and unmounts                  │
+│     App is fully visible and interactive                     │
+└──────────────────────────────────────────────────────────────┘
 ```
+
+> **Pair with `react-native-bootsplash`** for a fully flash-free launch — see the [recipe below](#recipe-bootsplash--lottie-splash-recommended-setup).
 
 ---
 
@@ -44,7 +46,7 @@ App is fully interactive
 ## Installation
 
 ```sh
-npm install react-native-lottie-splash
+npm install @rick427/react-native-lottie-splash
 # lottie-react-native is a peer dep — install it if you haven't already
 npm install lottie-react-native
 ```
@@ -95,7 +97,7 @@ Open `LaunchScreen.storyboard` in Xcode and set the background color of the root
 ```tsx
 // App.tsx
 import React from 'react';
-import { LottieSplashScreen } from 'react-native-lottie-splash';
+import { LottieSplashScreen } from '@rick427/react-native-lottie-splash';
 import { Navigator } from './src/navigation';
 
 export default function App() {
@@ -117,7 +119,7 @@ export default function App() {
 
 ```tsx
 // Anywhere in your app — no need to pass refs or use context
-import { hide as hideSplash } from 'react-native-lottie-splash';
+import { hide as hideSplash } from '@rick427/react-native-lottie-splash';
 
 function RootNavigator() {
   const { isReady } = useAppInitialization();
@@ -146,27 +148,90 @@ function RootNavigator() {
 </LottieSplashScreen>
 ```
 
+### Sizing the Lottie animation
+
+By default the animation is rendered edge-to-edge (`fullscreen={true}`). To constrain the animation to a specific size while keeping `backgroundColor` filling the whole screen, set `fullscreen={false}` and provide `width`/`height`:
+
+```tsx
+// 80% of screen (the default sizes when fullscreen={false}):
+<LottieSplashScreen
+  source={require('./assets/splash.json')}
+  backgroundColor="#e46921"
+  fullscreen={false}
+>
+  <Navigator />
+</LottieSplashScreen>
+
+// Fixed pixel dimensions:
+<LottieSplashScreen
+  source={require('./assets/splash.json')}
+  backgroundColor="#e46921"
+  fullscreen={false}
+  width={240}
+  height={240}
+>
+  <Navigator />
+</LottieSplashScreen>
+
+// Percentage values:
+<LottieSplashScreen
+  source={require('./assets/splash.json')}
+  backgroundColor="#e46921"
+  fullscreen={false}
+  width="60%"
+  height="40%"
+>
+  <Navigator />
+</LottieSplashScreen>
+```
+
+Good rule of thumb for `resizeMode` when sizing manually:
+- **`contain`** (default) — preserves aspect ratio within the given bounds (may letterbox)
+- **`cover`** — fills the given bounds, may crop the animation
+- **`center`** — rendered at the animation's natural size inside the bounds
+
+### Status bar control
+
+By default the splash renders a **transparent, translucent** status bar with dark icons (so the splash background extends behind the clock/battery icons). Override via:
+
+```tsx
+<LottieSplashScreen
+  source={require('./assets/splash.json')}
+  backgroundColor="#001122"        // dark background
+  statusBarStyle="light-content"   // light icons for a dark splash
+>
+  <Navigator />
+</LottieSplashScreen>
+```
+
+The status bar declaration unmounts with the overlay, so whatever your underlying screen declares takes over cleanly when the splash dismisses.
+
 ---
 
 ## Props
 
-| Prop              | Type                              | Default       | Description |
-|-------------------|-----------------------------------|---------------|-------------|
-| `source`          | `object \| string \| { uri }`    | **required**  | Lottie animation source — use `require('./anim.json')` or `{ uri: '...' }` |
-| `backgroundColor` | `string`                         | `'#FFFFFF'`   | Splash overlay background color |
-| `resizeMode`      | `'cover' \| 'contain' \| 'center'` | `'contain'` | How the animation is sized on screen |
-| `autoHide`        | `boolean`                        | `false`       | Automatically dismiss when the animation finishes |
-| `fadeDuration`    | `number`                         | `400`         | Duration of the fade-out in milliseconds |
-| `speed`           | `number`                         | `1`           | Playback speed multiplier |
-| `onHide`          | `() => void`                     | —             | Called after the overlay fully fades out |
-| `children`        | `ReactNode`                      | **required**  | Your app content (rendered behind the splash) |
+| Prop                    | Type                                         | Default          | Description |
+|-------------------------|----------------------------------------------|------------------|-------------|
+| `source`                | `object \| string \| { uri }`               | **required**     | Lottie animation source — use `require('./anim.json')` or `{ uri: '...' }` |
+| `backgroundColor`       | `string`                                     | `'#FFFFFF'`      | Splash overlay background color (always fills full screen) |
+| `resizeMode`            | `'cover' \| 'contain' \| 'center'`          | `'contain'`      | How the animation is sized within its bounds |
+| `fullscreen`            | `boolean`                                    | `true`           | When `true`, the animation fills the screen edge-to-edge. When `false`, the animation uses `width`/`height` and is centered |
+| `width`                 | `number \| \`${number}%\``                   | `'80%'`          | Animation width when `fullscreen={false}`. Number is dp, string is a percentage |
+| `height`                | `number \| \`${number}%\``                   | `'80%'`          | Animation height when `fullscreen={false}` |
+| `autoHide`              | `boolean`                                    | `false`          | Automatically dismiss when the animation finishes |
+| `fadeDuration`          | `number`                                     | `400`            | Duration of the fade-out in milliseconds |
+| `speed`                 | `number`                                     | `1`              | Playback speed multiplier |
+| `statusBarStyle`        | `'default' \| 'dark-content' \| 'light-content'` | `'dark-content'` | Status bar icon color while the splash is visible |
+| `statusBarTranslucent`  | `boolean`                                    | `true`           | (Android only) Whether the status bar is translucent so the splash background bleeds behind it |
+| `onHide`                | `() => void`                                 | —                | Called after the overlay fully fades out |
+| `children`              | `ReactNode`                                  | **required**     | Your app content (rendered behind the splash) |
 
 ---
 
 ## Imperative API
 
 ```ts
-import { hide } from 'react-native-lottie-splash';
+import { hide } from '@rick427/react-native-lottie-splash';
 
 hide(options?: { fadeDuration?: number }): void
 ```
@@ -236,7 +301,7 @@ Generate the bootsplash assets per the [bootsplash docs](https://github.com/zoon
 
 ```tsx
 import BootSplash from 'react-native-bootsplash';
-import { LottieSplashScreen } from 'react-native-lottie-splash';
+import { LottieSplashScreen } from '@rick427/react-native-lottie-splash';
 
 export default function App() {
   useSplashScreen(); // defined below
@@ -286,7 +351,7 @@ If you have work to do before the app is interactive (fetching config, checking 
 // hooks/useSplashScreen.ts
 import { useEffect } from 'react';
 import BootSplash from 'react-native-bootsplash';
-import { hide as hideLottie } from 'react-native-lottie-splash';
+import { hide as hideLottie } from '@rick427/react-native-lottie-splash';
 
 export default function useSplashScreen() {
   useEffect(() => {
