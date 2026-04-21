@@ -123,31 +123,37 @@ export function LottieSplashScreen({
     };
   }, [doHide]);
 
-  if (!visible) {
-    return <>{children}</>;
-  }
-
+  // IMPORTANT: We always render the same tree structure (root View wrapping
+  // children) regardless of whether the overlay is visible. Conditionally
+  // changing the parent type (e.g. View → Fragment) causes React to unmount
+  // and remount {children} — which means your entire navigation tree gets
+  // torn down and rebuilt, causing a white flash + loss of state.
   return (
     <View style={styles.root}>
       {children}
-      <Animated.View
-        style={[StyleSheet.absoluteFillObject, { backgroundColor, opacity }]}
-      >
-        <LottieView
-          ref={lottieRef}
-          source={source as Parameters<typeof LottieView>[0]['source']}
-          autoPlay
-          loop={false}
-          speed={speed}
-          style={styles.lottie}
-          resizeMode={resizeMode}
-          onAnimationFinish={(isCancelled: boolean) => {
-            if (!isCancelled && autoHide) {
-              doHide();
-            }
-          }}
-        />
-      </Animated.View>
+      {visible && (
+        <Animated.View
+          style={[StyleSheet.absoluteFillObject, { backgroundColor, opacity }]}
+        >
+          <LottieView
+            ref={lottieRef}
+            source={source as Parameters<typeof LottieView>[0]['source']}
+            autoPlay
+            loop={false}
+            speed={speed}
+            style={styles.lottie}
+            resizeMode={resizeMode}
+            // Hardware rendering removes most of the lag on complex animations.
+            renderMode="HARDWARE"
+            cacheComposition
+            onAnimationFinish={(isCancelled: boolean) => {
+              if (!isCancelled && autoHide) {
+                doHide();
+              }
+            }}
+          />
+        </Animated.View>
+      )}
     </View>
   );
 }
