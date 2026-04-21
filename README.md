@@ -1,5 +1,26 @@
 # react-native-lottie-splash
 
+[![npm version](https://img.shields.io/npm/v/@rick427/react-native-lottie-splash.svg?style=flat-square&color=cb3837&logo=npm)](https://www.npmjs.com/package/@rick427/react-native-lottie-splash)
+[![npm downloads](https://img.shields.io/npm/dm/@rick427/react-native-lottie-splash.svg?style=flat-square&color=cb3837)](https://www.npmjs.com/package/@rick427/react-native-lottie-splash)
+[![license](https://img.shields.io/npm/l/@rick427/react-native-lottie-splash.svg?style=flat-square&color=blue)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/rick427/react-native-lottie-splash?style=flat-square&logo=github&color=yellow)](https://github.com/rick427/react-native-lottie-splash/stargazers)
+
+### Tech stack
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.71+-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactnative.dev/)
+[![New Architecture](https://img.shields.io/badge/New%20Architecture-Ready-4CAF50?style=flat-square&logo=react&logoColor=white)](https://reactnative.dev/architecture/landing-page)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.9-7F52FF?style=flat-square&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
+[![Swift/ObjC](https://img.shields.io/badge/Objective--C++-iOS-A9B4C2?style=flat-square&logo=apple&logoColor=white)](https://developer.apple.com/)
+[![Lottie](https://img.shields.io/badge/Lottie-6.0+-00DDB3?style=flat-square&logo=lottiefiles&logoColor=white)](https://github.com/lottie-react-native/lottie-react-native)
+
+### Platforms
+
+[![iOS](https://img.shields.io/badge/iOS-13.4+-000000?style=flat-square&logo=apple&logoColor=white)](#)
+[![Android](https://img.shields.io/badge/Android-24+-3DDC84?style=flat-square&logo=android&logoColor=white)](#)
+
+---
+
 Animated Lottie splash screen for React Native. Plays a Lottie animation on app launch, then dismisses once your app signals it's ready — with a smooth fade-out transition.
 
 Works on **Android** and **iOS**, supports the **New Architecture** (RN 0.73+).
