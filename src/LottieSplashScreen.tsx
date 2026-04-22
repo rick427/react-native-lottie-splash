@@ -20,6 +20,23 @@ export interface LottieSplashScreenProps {
   resizeMode?: 'cover' | 'contain' | 'center';
   /** Automatically dismiss when the animation finishes (loop must be false). Default: false */
   autoHide?: boolean;
+  /**
+   * Gate for `autoHide`. When `autoHide={true}`, the splash only dismisses
+   * once BOTH the animation has finished AND `ready` is `true`.
+   *
+   * Use this to hold the splash on its last frame while async work (OTA
+   * checks, auth bootstrap, remote config, etc.) is still in flight.
+   *
+   * - `ready === true` (default): behaves like before — hides as soon as the
+   *   animation ends.
+   * - `ready === false`: animation plays, holds on the last frame, and
+   *   dismisses once `ready` flips to `true`.
+   *
+   * Ignored when `autoHide={false}` — use the imperative `hide()` API instead.
+   *
+   * Default: `true`
+   */
+  ready?: boolean;
   /** Duration of the fade-out transition in milliseconds. Default: 400 */
   fadeDuration?: number;
   /** Playback speed multiplier. Default: 1 */
@@ -96,6 +113,7 @@ export function LottieSplashScreen({
   backgroundColor = '#FFFFFF',
   resizeMode = 'contain',
   autoHide = false,
+  ready = true,
   fadeDuration = 400,
   speed = 1,
   statusBarStyle = 'dark-content',
@@ -107,6 +125,7 @@ export function LottieSplashScreen({
   children,
 }: LottieSplashScreenProps) {
   const [visible, setVisible] = useState(true);
+  const [animationFinished, setAnimationFinished] = useState(false);
   const opacity = useRef(new Animated.Value(1)).current;
   const lottieRef = useRef<LottieView>(null);
   const isHiding = useRef(false);
@@ -161,6 +180,15 @@ export function LottieSplashScreen({
     };
   }, [doHide]);
 
+  // autoHide logic: dismiss once both the animation has finished AND the
+  // consumer says we're ready. When `ready` is omitted it defaults to `true`,
+  // so this reduces to "hide on animation end" — backward compatible.
+  useEffect(() => {
+    if (autoHide && animationFinished && ready) {
+      doHide();
+    }
+  }, [autoHide, animationFinished, ready, doHide]);
+
   // IMPORTANT: We always render the same tree structure (root View wrapping
   // children) regardless of whether the overlay is visible. Conditionally
   // changing the parent type (e.g. View → Fragment) causes React to unmount
@@ -205,8 +233,8 @@ export function LottieSplashScreen({
             renderMode="HARDWARE"
             cacheComposition
             onAnimationFinish={(isCancelled: boolean) => {
-              if (!isCancelled && autoHide) {
-                doHide();
+              if (!isCancelled) {
+                setAnimationFinished(true);
               }
             }}
           />

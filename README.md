@@ -165,6 +165,39 @@ function RootNavigator() {
 </LottieSplashScreen>
 ```
 
+### Wait for async bootstrap before auto-dismissing
+
+Combine `autoHide={true}` with the `ready` prop to hold the splash on its last frame until an OTA check / auth bootstrap / remote config fetch completes. The splash only fades out once **both** the animation has finished AND `ready === true`.
+
+```tsx
+function App() {
+  // OTA check, auth restore, feature flags — anything async that must
+  // complete before the user sees the app.
+  const { checking, available, mandatory } = useCodePush();
+
+  return (
+    <LottieSplashScreen
+      source={require('./assets/splash.json')}
+      backgroundColor="#001122"
+      autoHide={true}
+      ready={!checking}      // ← gate the auto-dismiss
+    >
+      {available && mandatory ? <AppUpdateScreen /> : <RootRouter />}
+    </LottieSplashScreen>
+  );
+}
+```
+
+Behavior:
+
+| Animation ends | `ready` | Result                                      |
+|----------------|---------|---------------------------------------------|
+| ✗              | —       | Splash playing                              |
+| ✓              | `false` | Splash holds on the last frame              |
+| ✓              | `true`  | Splash fades out                            |
+
+> **Tip:** keep the mandatory-update branch *inside* the `<LottieSplashScreen>` rather than returning `<AppUpdateScreen />` as a sibling — otherwise the splash tree tears down mid-flight and you lose the fade-out animation.
+
 ### Sizing the Lottie animation
 
 By default the animation is rendered edge-to-edge (`fullscreen={true}`). To constrain the animation to a specific size while keeping `backgroundColor` filling the whole screen, set `fullscreen={false}` and provide `width`/`height`:
@@ -236,6 +269,7 @@ The status bar declaration unmounts with the overlay, so whatever your underlyin
 | `width`                 | `number \| \`${number}%\``                   | `'80%'`          | Animation width when `fullscreen={false}`. Number is dp, string is a percentage |
 | `height`                | `number \| \`${number}%\``                   | `'80%'`          | Animation height when `fullscreen={false}` |
 | `autoHide`              | `boolean`                                    | `false`          | Automatically dismiss when the animation finishes |
+| `ready`                 | `boolean`                                    | `true`           | Gate for `autoHide`. When `false`, splash holds on the last frame until this flips to `true`. Ignored when `autoHide={false}` |
 | `fadeDuration`          | `number`                                     | `400`            | Duration of the fade-out in milliseconds |
 | `speed`                 | `number`                                     | `1`              | Playback speed multiplier |
 | `statusBarStyle`        | `'default' \| 'dark-content' \| 'light-content'` | `'dark-content'` | Status bar icon color while the splash is visible |
