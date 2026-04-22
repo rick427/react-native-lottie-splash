@@ -436,6 +436,12 @@ override fun getPackages(): List<ReactPackage> =
 
 ---
 
+## Authors
+
+- **Richard Njoku** — [@rick427](https://github.com/rick427)
+
+---
+
 ## License
 
-MIT
+[MIT](./LICENSE) © Richard Njoku
