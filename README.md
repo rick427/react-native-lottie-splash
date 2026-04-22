@@ -23,12 +23,6 @@ Works on **Android** and **iOS**, supports the **New Architecture** (RN 0.73+).
 
 ---
 
-## Live Demo
-
-https://github.com/user-attachments/assets/d889cf52-c828-4a12-b37e-2e9010d90b37
-
----
-
 ## How it works
 
 ```
