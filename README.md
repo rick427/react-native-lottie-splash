@@ -283,7 +283,7 @@ App launch
 ### Step 1 — Install both libraries
 
 ```sh
-npm install react-native-bootsplash react-native-lottie-splash lottie-react-native
+npm install react-native-bootsplash @rick427/react-native-lottie-splash lottie-react-native
 cd ios && pod install && cd ..
 ```
 
