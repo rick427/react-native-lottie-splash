@@ -1,6 +1,6 @@
 {
   "name": "@rick427/react-native-lottie-splash",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Animated Lottie splash screen for React Native — plays on launch, dismisses when your app is ready. Pairs with react-native-bootsplash for a flash-free launch experience.",
   "main": "src/index",
   "react-native": "src/index",
