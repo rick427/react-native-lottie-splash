@@ -432,13 +432,18 @@ override fun getPackages(): List<ReactPackage> =
 
 ## Authors
 
-<a href="https://github.com/rick427">
-  <img src="https://github.com/rick427.png" width="40" height="40" align="left" style="border-radius:50%;margin-right:10px" alt="Richard Njoku" />
-</a>
-
-[**Richard Njoku**](https://github.com/rick427)
-
-<br clear="left" />
+<table>
+  <tr>
+    <td>
+      <a href="https://github.com/rick427">
+        <img src="https://github.com/rick427.png?size=80" width="60" height="60" style="border-radius:50%" alt="Richard Njoku" />
+      </a>
+    </td>
+    <td>
+      <a href="https://github.com/rick427"><b>Richard Njoku</b></a>
+    </td>
+  </tr>
+</table>
 
 ---
 
